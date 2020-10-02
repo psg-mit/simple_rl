@@ -19,13 +19,13 @@ class ReinforceAgent(PolicyGradientAgent):
         Agent.__init__(self, name=name, actions=actions)
 
     def policy(self, state):
-    	'''
-    	Args:
-    		state (simple_rl.State)
+        '''
+        Args:
+            state (simple_rl.State)
 
-    	Returns:
-    		(str)
-    	'''
+        Returns:
+            (str)
+        '''
         # Sample from
         return self.actions[np.random.multinomial(1, self.pmf_a_given_s[state].values()).tolist().index(1)]
 
