@@ -129,7 +129,7 @@ class RMaxAgent(Agent):
             (tuple) --> (float, str): where the float is the Qval, str is the action.
         '''
         # Grab random initial action in case all equal
-        best_action = random.choice(self.actions)
+        best_action = np.random.choice(self.actions)
         max_q_val = self.get_q_value(state, best_action)
 
         # Find best action (action w/ current max predicted Q value) 

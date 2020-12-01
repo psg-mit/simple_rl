@@ -172,7 +172,7 @@ class QLearningAgent(Agent):
         best_action = random.choice(self.actions)
         max_q_val = float("-inf")
         shuffled_action_list = self.actions[:]
-        random.shuffle(shuffled_action_list)
+        numpy.random.shuffle(shuffled_action_list)
 
         # Find best action (action w/ current max predicted Q value)
         for action in shuffled_action_list:
