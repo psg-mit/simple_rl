@@ -1,8 +1,7 @@
 # Python imports.
 from __future__ import print_function
 from collections import defaultdict
-import random
-import copy 
+import copy
 
 # Check python version for queue module.
 import sys

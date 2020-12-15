@@ -1,8 +1,7 @@
 ''' QLearningAgentClass.py: Class for a basic QLearningAgent '''
 
 # Python imports.
-import random
-import numpy
+import numpy as np
 import time
 from collections import defaultdict
 
@@ -110,12 +109,12 @@ class QLearningAgent(Agent):
             (str): action.
         '''
         # Policy: Epsilon of the time explore, otherwise, greedyQ.
-        if numpy.random.random() > self.epsilon:
+        if np.random.random() > self.epsilon:
             # Exploit.
             action = self.get_max_q_action(state)
         else:
             # Explore
-            action = numpy.random.choice(self.actions)
+            action = np.random.choice(self.actions)
 
         return action
 
@@ -127,7 +126,7 @@ class QLearningAgent(Agent):
         Returns:
             (str): action.
         '''
-        return numpy.random.choice(self.actions, 1, p=self.get_action_distr(state))[0]
+        return np.random.choice(self.actions, 1, p=self.get_action_distr(state))[0]
 
     # ---------------------------------
     # ---- Q VALUES AND PARAMETERS ----
@@ -169,10 +168,10 @@ class QLearningAgent(Agent):
             (tuple) --> (float, str): where the float is the Qval, str is the action.
         '''
         # Grab random initial action in case all equal
-        best_action = random.choice(self.actions)
+        best_action = np.random.choice(self.actions)
         max_q_val = float("-inf")
         shuffled_action_list = self.actions[:]
-        numpy.random.shuffle(shuffled_action_list)
+        np.random.shuffle(shuffled_action_list)
 
         # Find best action (action w/ current max predicted Q value)
         for action in shuffled_action_list:
@@ -239,8 +238,8 @@ class QLearningAgent(Agent):
             all_q_vals.append(self.get_q_value(state, action))
 
         # Softmax distribution.
-        total = sum([numpy.exp(beta * qv) for qv in all_q_vals])
-        softmax = [numpy.exp(beta * qv) / total for qv in all_q_vals]
+        total = sum([np.exp(beta * qv) for qv in all_q_vals])
+        softmax = [np.exp(beta * qv) / total for qv in all_q_vals]
 
         return softmax
 
