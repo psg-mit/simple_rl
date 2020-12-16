@@ -17,11 +17,12 @@ class RMaxAgent(Agent):
     Implementation for an R-Max Agent [Strehl, Li and Littman 2009]
     '''
 
-    def __init__(self, actions, gamma=0.95, s_a_threshold=2, epsilon_one=0.99, max_reward=1.0, name="RMax", custom_q_init=None):
-        self.name = name 
+    def __init__(self, actions, gamma=0.95, s_a_threshold=2, termination_threshold=100, epsilon_one=0.99, max_reward=1.0, name="RMax", custom_q_init=None):
+        self.name = name
         Agent.__init__(self, name=name, actions=actions, gamma=gamma)
         self.rmax = max_reward
         self.s_a_threshold = s_a_threshold
+        self.termination_threshold = termination_threshold
         self.custom_q_init = custom_q_init
         self.reset()
         self.custom_q_init = custom_q_init
