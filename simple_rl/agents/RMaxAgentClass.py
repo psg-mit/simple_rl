@@ -7,7 +7,7 @@ Notes:
 
 # Python imports.
 import numpy as np
-from collections import defaultdict
+from collections import defaultdict, deque
 
 # Local classes.
 from simple_rl.agents.AgentClass import Agent
@@ -28,6 +28,9 @@ class RMaxAgent(Agent):
         self.custom_q_init = custom_q_init
         self.gamma = gamma
         self.epsilon_one = epsilon_one
+        self.transition_func_est = defaultdict(
+            lambda: defaultdict(lambda: defaultdict(float)))
+        self.history = deque([], maxlen=self.termination_threshold)
 
         if self.custom_q_init:
             self.q_func = self.custom_q_init
@@ -90,6 +93,9 @@ class RMaxAgent(Agent):
                 self.t_s_a_counts[state][action] += 1
 
                 if self.r_s_a_counts[state][action] == self.s_a_threshold:
+                    for next_st in self.transitions[state][action].keys():
+                        self.transition_func_est[state][action][next_st] = self._get_transition(state, action, next_st)
+
                     # Start updating Q values for subsequent states
                     lim = int(np.log(1/(self.epsilon_one * (1 - self.gamma))) / (1 - self.gamma))
                     for i in range(1, lim):
@@ -97,7 +103,17 @@ class RMaxAgent(Agent):
                             for curr_action in self.actions:
                                 if self.r_s_a_counts[curr_state][curr_action] >= self.s_a_threshold:
                                     self.q_func[curr_state][curr_action] = self._get_reward(curr_state, curr_action) + (self.gamma * self.get_transition_q_value(curr_state, curr_action))
-
+                self.history.append({
+                    "state": state,
+                    "action": action,
+                    "already_known": False
+                })
+            else:
+                self.history.append({
+                    "state": state,
+                    "action": action,
+                    "already_known": True
+                })
     def get_transition_q_value(self, state, action):
         '''
         Args: 
@@ -203,3 +219,36 @@ class RMaxAgent(Agent):
         '''
 
         return self.transitions[state][action][next_state] / self.t_s_a_counts[state][action]
+
+
+    def last_k_known(self, k: int) -> bool:
+        """Returns whether last k transitions have been known transitions."""
+        return len(self.history) >= k and all(
+            [transition["already_known"] for transition in list(self.history)[-k:]])
+
+    def get_policy_dict(self):
+        policy_dict = dict()
+        for state in self.q_func.keys():
+            policy_dict[state] = self.get_max_q_actions(state)
+
+        return policy_dict
+
+    def get_max_q_actions(self, state):
+        '''
+        Args:
+            state (State)
+
+        Returns:
+            (list): List of actions with the max q value in the given @state.
+        '''
+        max_q_val = self.get_value(state)
+        best_action_list = []
+
+        # Find best action (action w/ current max predicted Q value)
+        for action in self.actions:
+            q_s_a = self.get_q_value(state, action)
+            if q_s_a == max_q_val:
+                best_action_list.append(action)
+
+        assert len(best_action_list) > 0
+        return best_action_list
