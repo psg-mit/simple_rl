@@ -220,6 +220,8 @@ class RMaxAgent(Agent):
 
         return self.transitions[state][action][next_state] / self.t_s_a_counts[state][action]
 
+    def _transition_is_known(self, env_state, action):
+        return self.t_s_a_counts[env_state][action] >= self.s_a_threshold
 
     def last_k_known(self, k: int) -> bool:
         """Returns whether last k transitions have been known transitions."""
